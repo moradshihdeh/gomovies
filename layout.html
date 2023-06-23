@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>{{.Title}}</title>
+    <style>
+        #top-nav ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #333;
+        }
+
+        #top-nav li {
+            float: left;
+        }
+
+        #top-nav li a {
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+        }
+
+        /* Change the link color to #111 (black) on hover */
+        #top-nav li a:hover {
+            background-color: #111;
+        }
+
+        /* MOVIES */
+        ul#movies  {
+            list-style-type: none;
+            width: 200px;
+            height: auto;
+        }
+
+        ul#movies  li {
+            padding: 10px 0;
+            border-bottom: 1px solid #add8e6;
+            text-align: left;
+            transition: padding-left 0.3s linear, font-weight 0.2s linear, color 0.3s linear;
+            -webkit-transition: padding-left 0.3s linear, font-weight 0.2s linear, color 0.3s linear;
+            -moz-transition: padding-left 0.3s linear, font-weight 0.2s linear, color 0.3s linear;
+            -o-transition: padding-left 0.3s linear, font-weight 0.2s linear, color 0.3s linear;
+            -ms-transition: padding-left 0.3s linear, font-weight 0.2s linear, color 0.3s linear;
+        }
+
+        ul#movies  li:first-child {
+            border-top: 1px solid #909;
+        }
+
+        ul#movies  li:hover {
+            padding-left: 20px;
+            font-weight: 600;
+            color: #add8e6;
+        }
+
+        /* SELECT YEAR */
+        #select-year h1, #select-year form{ 
+            display:inline;
+            margin-top:10px;
+            margin-right:15px;
+
+        }
+
+        #movies-list, #movies-list h1, #movies-list ul{
+            width: 100%;
+        }
+
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>{{.Title}}</h1>
+        <nav id="top-nav">
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/about">About</a></li>
+                <li><a href="/contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        {{template "content" .}}
+    </main>
+
+
+</body>
+
+</html>

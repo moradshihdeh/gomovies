@@ -1,0 +1,29 @@
+{{ define "content" }}
+<div id="select-year">
+    <h1>Select a Year</h1>
+    <form action="/movies-by-year" method="post">
+        <select name="year">
+            {{range .Years}}
+            <option value="{{.}}">{{.}}</option>
+            {{end}}
+        </select>
+        <button type="submit">Submit</button>
+    </form>
+</div>
+
+{{if .Movies}}
+<div id="movies-list">
+    <h1>Movies from {{.Year}}</h1>
+    <ul id="movies">
+        {{range .Movies}}
+        <li>
+            <h3>{{.Title}}</h3>
+            <p>{{.Description}}</p>
+        </li>
+        {{else}}
+        <li>No movies found for the selected year.</li>
+        {{end}}
+    </ul>
+</div>
+{{end}}
+{{end}}

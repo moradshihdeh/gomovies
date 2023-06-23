@@ -1,0 +1,13 @@
+{{ define "content" }}
+    <h1>Movies from {{.Year}}</h1>
+    <ul>
+        {{range .Movies}}
+        <li>
+            <h3>{{.Title}}</h3>
+            <p>{{.Description}}</p>
+        </li>
+        {{else}}
+        <li>No movies found for the selected year.</li>
+        {{end}}
+    </ul>
+{{end}}
