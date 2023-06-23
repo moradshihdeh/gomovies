@@ -174,21 +174,25 @@ func addMovieHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tmpl, err := template.ParseFiles("layout.html", "static/add_movie.html")
+	tmpl, err := template.ParseFiles("layout.html", "static/add-movie.html")
 	if err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		http.Error(w, "Internal Server Error 1 ", http.StatusInternalServerError)
+		fmt.Printf("%v\n", err)
 		return
 	}
 
 	data := struct {
 		Title string
+		Years []int
 	}{
 		Title: "Add Movie",
+		Years: generateYears(2010, 2023),
 	}
 
 	err = tmpl.ExecuteTemplate(w, "layout.html", data)
 	if err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		http.Error(w, "Internal Server Error 2", http.StatusInternalServerError)
+		fmt.Printf("%v\n", err)
 		return
 	}
 }
