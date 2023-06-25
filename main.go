@@ -12,12 +12,8 @@ type HomeData struct {
 }
 
 func renderTemplate(w http.ResponseWriter, tmpl string, data interface{}) {
-	layout := "static/layout.html"
-	tmplFiles := []string{layout, tmpl}
 
-	fmt.Printf("%v\n", data)
-
-	t, err := template.ParseFiles(tmplFiles...)
+	t, err := template.ParseFiles("static/layout.html", tmpl)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -41,10 +37,14 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func moviesHandler(w http.ResponseWriter, r *http.Request) {
-	// Handle movies page logic
-	// ...
-
-	renderTemplate(w, "static/movies.html", nil)
+	data := struct {
+		Title  string
+		Movies []Movie
+	}{
+		Title:  "Movies List Page",
+		Movies: nil,
+	}
+	renderTemplate(w, "static/movies.html", data)
 }
 
 func directorsHandler(w http.ResponseWriter, r *http.Request) {
@@ -102,6 +102,18 @@ func actorsHandler(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, "static/actors.html", data)
 }
 
+func aboutHandler(w http.ResponseWriter, r *http.Request) {
+	data := struct {
+		Title   string
+		Content string
+	}{
+		Title:   "About",
+		Content: "This is a web page about movies.",
+	}
+
+	renderTemplate(w, "static/about.html", data)
+}
+
 func main() {
 	/*
 		// Connect to the MySQL database
@@ -154,6 +166,7 @@ func main() {
 	http.HandleFunc("/movies", moviesHandler)
 	http.HandleFunc("/directors", directorsHandler)
 	http.HandleFunc("/actors", actorsHandler)
+	http.HandleFunc("/about", aboutHandler)
 
 	fs := http.FileServer(http.Dir("static"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))

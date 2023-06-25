@@ -1,5 +1,6 @@
 {{ define "content" }}
     <h1>{{.Title}}</h1>
+
     <ul>
         {{range .Movies}}
         <li>
@@ -9,5 +10,5 @@
         {{else}}
         <li>No movies found for the selected year.</li>
         {{end}}
-    </ul>
+
 {{end}}
