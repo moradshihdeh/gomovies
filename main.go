@@ -1,9 +1,13 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"html/template"
+	"log"
 	"net/http"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 type HomeData struct {
@@ -36,70 +40,65 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, "static/home.html", data)
 }
 
-func moviesHandler(w http.ResponseWriter, r *http.Request) {
-	data := struct {
-		Title  string
-		Movies []Movie
-	}{
-		Title:  "Movies List Page",
-		Movies: nil,
-	}
-	renderTemplate(w, "static/movies.html", data)
-}
-
-func directorsHandler(w http.ResponseWriter, r *http.Request) {
-	data := struct {
-		Title     string
-		Directors []struct {
-			Name        string
-			DateOfBirth string
-			Nationality string
+func moviesHandler(db *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		movies, err := getMovies(db)
+		if err != nil {
+			log.Println(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
 		}
-	}{
-		Title: "Director List",
-		Directors: []struct {
-			Name        string
-			DateOfBirth string
-			Nationality string
+
+		data := struct {
+			Title  string
+			Movies []Movie
 		}{
-			{
-				Name:        "Christopher Nolan",
-				DateOfBirth: "July 30, 1970",
-				Nationality: "British",
-			},
-			{
-				Name:        "Quentin Tarantino",
-				DateOfBirth: "March 27, 1963",
-				Nationality: "American",
-			},
-			// Add more directors as needed
-		},
+			Title:  "Movies List Page",
+			Movies: movies,
+		}
+		renderTemplate(w, "static/movies.html", data)
+
 	}
-	renderTemplate(w, "static/directors.html", data)
 }
 
-func actorsHandler(w http.ResponseWriter, r *http.Request) {
-	data := struct {
-		Title  string
-		Actors []Actor
-	}{
-		Title: "Actor List",
-		Actors: []Actor{
-			{
-				Name:        "Leonardo DiCaprio",
-				DateOfBirth: "November 11, 1974",
-				Nationality: "American",
-			},
-			{
-				Name:        "Tom Hanks",
-				DateOfBirth: "July 9, 1956",
-				Nationality: "American",
-			},
-			// Add more actors as needed
-		},
+func directorsHandler(db *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		directors, err := getDirectors(db)
+		if err != nil {
+			log.Println(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		data := struct {
+			Title     string
+			Directors []Director
+		}{
+			Title:     "Director List",
+			Directors: directors,
+		}
+		renderTemplate(w, "static/directors.html", data)
 	}
+}
 
-	renderTemplate(w, "static/actors.html", data)
+func actorsHandler(db *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		actors, err := getActors(db)
+		if err != nil {
+			log.Println(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		data := struct {
+			Title  string
+			Actors []Actor
+		}{
+			Title:  "Actor List",
+			Actors: actors,
+		}
+
+		renderTemplate(w, "static/actors.html", data)
+	}
 }
 
 func aboutHandler(w http.ResponseWriter, r *http.Request) {
@@ -115,57 +114,57 @@ func aboutHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	/*
-		// Connect to the MySQL database
-		db, err := sql.Open("mysql", "bkdr:n3t4cc3ss@tcp(192.168.0.102:3306)/movies")
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer db.Close()
 
-		// Test the database connection
-		err = db.Ping()
-		if err != nil {
-			log.Fatal(err)
-		}
-		fmt.Println("Connected to the database!")
+	// Connect to the MySQL database
+	db, err := sql.Open("mysql", "bkdr:password@tcp(192.168.0.102:3306)/movies")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
 
-		// Load all tables' results into arrays
-		movies, err := getMovies(db)
-		if err != nil {
-			log.Fatal(err)
-		}
+	// Test the database connection
+	err = db.Ping()
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("Connected to the database!")
 
-		actors, err := getActors(db)
-		if err != nil {
-			log.Fatal(err)
-		}
+	// Load all tables' results into arrays
+	movies, err := getMovies(db)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-		reviews, err := getReviews(db)
-		if err != nil {
-			log.Fatal(err)
-		}
+	actors, err := getActors(db)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-		// Print the loaded data
-		fmt.Println("Movies:")
-		for _, movie := range movies {
-			fmt.Printf("Title: %s, Director: %s\n", movie.Title, movie.Director)
-		}
+	reviews, err := getReviews(db)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-		fmt.Println("Actors:")
-		for _, actor := range actors {
-			fmt.Printf("Name: %s, Nationality: %s\n", actor.Name, actor.Nationality)
-		}
+	// Print the loaded data
+	fmt.Println("Movies:")
+	for _, movie := range movies {
+		fmt.Printf("Title: %s, Director: %s\n", movie.Title, movie.Director)
+	}
 
-		fmt.Println("Reviews:")
-		for _, review := range reviews {
-			fmt.Printf("Reviewer: %s, Rating: %.1f\n", review.ReviewerName, review.Rating)
-		}
-	*/
+	fmt.Println("Actors:")
+	for _, actor := range actors {
+		fmt.Printf("Name: %s, Nationality: %s\n", actor.Name, actor.Nationality)
+	}
+
+	fmt.Println("Reviews:")
+	for _, review := range reviews {
+		fmt.Printf("Reviewer: %s, Rating: %.1f\n", review.ReviewerName, review.Rating)
+	}
+
 	http.HandleFunc("/", homeHandler)
-	http.HandleFunc("/movies", moviesHandler)
-	http.HandleFunc("/directors", directorsHandler)
-	http.HandleFunc("/actors", actorsHandler)
+	http.HandleFunc("/movies", moviesHandler(db))
+	http.HandleFunc("/directors", directorsHandler(db))
+	http.HandleFunc("/actors", actorsHandler(db))
 	http.HandleFunc("/about", aboutHandler)
 
 	fs := http.FileServer(http.Dir("static"))

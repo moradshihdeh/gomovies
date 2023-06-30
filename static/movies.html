@@ -1,14 +1,15 @@
 {{ define "content" }}
     <h1>{{.Title}}</h1>
-
-    <ul>
-        {{range .Movies}}
-        <li>
-            <h3>{{.Title}}</h3>
-            <p>{{.Description}}</p>
-        </li>
-        {{else}}
-        <li>No movies found for the selected year.</li>
-        {{end}}
-
-{{end}}
+    <div style="display: flex; flex-direction: column;">
+        {{ range .Movies }}
+            <div style="margin-bottom: 10px; padding: 10px; border: 1px solid #ccc;">
+                <h3>{{.Title}}</h3>
+                <p>{{.PlotSummary}}</p>
+            </div>
+        {{ else }}
+            <div style="margin-bottom: 10px; padding: 10px; border: 1px solid #ccc;">
+                <p>No movies found for the selected year.</p>
+            </div>
+        {{ end }}
+    </div>
+{{ end }}

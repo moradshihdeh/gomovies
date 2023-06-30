@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -26,6 +27,7 @@ type Actor struct {
 }
 
 type Director struct {
+	ID          int
 	Name        string
 	DateOfBirth string
 	Nationality string
@@ -71,6 +73,37 @@ func getMovies(db *sql.DB) ([]Movie, error) {
 	}
 
 	return movies, nil
+}
+
+func getDirectors(db *sql.DB) ([]Director, error) {
+	//create director list
+	rows, err := db.Query("SELECT * FROM directors")
+	if err != nil {
+		fmt.Printf("error query select : %v\n", err)
+		return nil, err
+	}
+	defer rows.Close()
+	var directors []Director
+	for rows.Next() {
+		var director Director
+		err := rows.Scan(
+			&director.ID,
+			&director.Name,
+			&director.DateOfBirth,
+			&director.Nationality,
+		)
+		if err != nil {
+			return nil, err
+		}
+		directors = append(directors, director)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return directors, nil
+
 }
 
 func getActors(db *sql.DB) ([]Actor, error) {

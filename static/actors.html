@@ -1,12 +1,12 @@
 {{ define "content" }}
     <h1>{{ .Title }}</h1>
-    <ul>
+    <div style="display: flex; flex-direction: column;">
         {{ range .Actors }}
-        <li>
-            <p><strong>Name:</strong> {{ .Name }}</p>
-            <p><strong>Date of Birth:</strong> {{ .DateOfBirth }}</p>
-            <p><strong>Nationality:</strong> {{ .Nationality }}</p>
-        </li>
+            <div style="margin-bottom: 10px; padding: 10px; border: 1px solid #ccc;">
+                <p><strong>Name:</strong> {{ .Name }}</p>
+                <p><strong>Date of Birth:</strong> {{ .DateOfBirth }}</p>
+                <p><strong>Nationality:</strong> {{ .Nationality }}</p>
+            </div>
         {{ end }}
-    </ul>
+    </div>
 {{ end }}
